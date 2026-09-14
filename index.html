@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="رحلة الحروف - لعبة تعليمية تفاعلية باستخدام أكواد QR">
+  <title>رحلة الحروف</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <div class="badge">🔤 رحلة الحروف</div>
+      <h1 id="title">أهلاً بك في رحلة الحروف!</h1>
+      <p id="intro">امسح رمز QR، اكتشف الحرف، ثم أجب عن التحدي.</p>
+    </header>
+
+    <section class="card letter-card" aria-live="polite">
+      <div class="letter-circle" id="letter">؟</div>
+      <div class="content">
+        <div class="small" id="station">محطة البداية</div>
+        <h2 id="letterName">جاهز للانطلاق؟</h2>
+        <p id="description">اختر حرفاً من الخريطة أو افتح هذه الصفحة من خلال QR.</p>
+      </div>
+    </section>
+
+    <section class="card challenge" id="challengeBox">
+      <h2>🎯 التحدي</h2>
+      <p id="question">ابدأ باختيار حرف من الأسفل.</p>
+      <div id="answers" class="answers"></div>
+      <p id="feedback" class="feedback" role="status"></p>
+    </section>
+
+    <section class="card">
+      <div class="section-head">
+        <h2>🗺️ خريطة الحروف</h2>
+        <span id="progress">0 / 28</span>
+      </div>
+      <div id="lettersGrid" class="letters-grid"></div>
+    </section>
+
+    <section class="card admin-link">
+      <h2>🛠️ إعداد المعلم</h2>
+      <p>استخدم مولّد QR لإنشاء رمز مستقل لكل حرف.</p>
+      <a href="qr.html">فتح مولّد أكواد QR ↗</a>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
