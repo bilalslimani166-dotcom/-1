@@ -1,84 +1,11 @@
-const letters=[
-["ا","الألف","أسد","ب","أسد","باب","جمل","قلم"],
-["ب","الباء","بيت","ا","بيت","أسد","ورد","قمر"],
-["ت","التاء","تفاحة","ث","تفاحة","باب","جمل","نمر"],
-["ث","الثاء","ثعلب","ت","ثعلب","بيت","قمر","ورد"],
-["ج","الجيم","جمل","ح","جمل","أسد","بيت","قلم"],
-["ح","الحاء","حصان","خ","حصان","تفاحة","بيت","نجم"],
-["خ","الخاء","خبز","ج","خبز","قمر","ورد","باب"],
-["د","الدال","دب","ذ","دب","نمر","كتاب","شجرة"],
-["ذ","الذال","ذئب","ر","ذئب","جمل","قلم","بيت"],
-["ر","الراء","رمان","ز","رمان","أسد","حصان","باب"],
-["ز","الزاي","زهرة","س","زهرة","جمل","كتاب","قمر"],
-["س","السين","سمكة","ش","سمكة","بيت","ثعلب","قلم"],
-["ش","الشين","شجرة","ص","شجرة","أسد","دب","خبز"],
-["ص","الصاد","صقر","ض","صقر","ورد","جمل","تفاحة"],
-["ض","الضاد","ضفدع","ط","ضفدع","قمر","بيت","نمر"],
-["ط","الطاء","طائرة","ظ","طائرة","أسد","قلم","شجرة"],
-["ظ","الظاء","ظرف","ع","ظرف","جمل","سمكة","بيت"],
-["ع","العين","عصفور","غ","عصفور","قمر","ورد","خبز"],
-["غ","الغين","غزال","ف","غزال","دب","كتاب","تفاحة"],
-["ف","الفاء","فراشة","ق","فراشة","جمل","بيت","قلم"],
-["ق","القاف","قمر","ك","قمر","أسد","زهرة","خبز"],
-["ك","الكاف","كتاب","ل","كتاب","دب","سمكة","ورد"],
-["ل","اللام","ليمون","م","ليمون","قلم","حصان","شجرة"],
-["م","الميم","موز","ن","موز","ثعلب","بيت","قمر"],
-["ن","النون","نمر","هـ","نمر","جمل","زهرة","كتاب"],
-["هـ","الهاء","هلال","و","هلال","أسد","خبز","قلم"],
-["و","الواو","وردة","ي","وردة","دب","تفاحة","قمر"],
-["ي","الياء","يد","ا","يد","نمر","كتاب","شجرة"]
-].map(x=>({l:x[0],name:x[1],word:x[2],sound:x[3],correct:x[4],answers:x.slice(4)}));
-
-const params=new URLSearchParams(location.search);
-const wanted=params.get("letter");
-let current=letters.find(x=>x.l===wanted)||letters[0];
-let done=JSON.parse(localStorage.getItem("rahlet_done")||"[]");
-let score=Number(localStorage.getItem("rahlet_score")||0);
-
-const $=id=>document.getElementById(id);
-function save(){localStorage.setItem("rahlet_done",JSON.stringify(done));localStorage.setItem("rahlet_score",score)}
-function speak(text){if("speechSynthesis"in window){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(text))}}
-function imageCandidates(item){
- const n=letters.indexOf(item)+1;
- const names=[`${String(n).padStart(2,"0")}_${item.l}.png`,`${String(n).padStart(2,"0")}_${item.l}.jpg`,`${String(n).padStart(2,"0")}_${item.l}.webp`];
- return names;
-}
-function show(item){
- current=item;
- $("letter").textContent=item.l;$("stationLabel").textContent=`محطة حرف ${item.l}`;$("letterName").textContent=item.name;
- $("description").textContent=`ابحث عن كلمة تبدأ بحرف ${item.l}. استمع للنطق ثم اختر الإجابة الصحيحة.`;
- $("score").textContent=`⭐ ${score}`;
- $("question").textContent=`أي كلمة تبدأ بحرف ${item.l}؟`;
- $("feedback").textContent="";$("nextBtn").hidden=true;
- const img=$("letterImage");img.hidden=true;
- let i=0;const candidates=imageCandidates(item);
- function tryImg(){if(i>=candidates.length)return;img.src=candidates[i++];img.onload=()=>img.hidden=false;img.onerror=tryImg} tryImg();
- const box=$("answers");box.innerHTML="";
- [...item.answers].sort(()=>Math.random()-.5).forEach(ans=>{
-  const b=document.createElement("button");b.className="answer";b.textContent=ans;
-  b.onclick=()=>answer(b,ans,item);box.appendChild(b)
- });
- renderGrid(); updateProgress();
-}
-function answer(btn,ans,item){
- const buttons=[...$("answers").children];
- if(ans===item.correct){
-  btn.classList.add("correct");$("feedback").textContent="🎉 ممتاز! إجابة صحيحة.";
-  if(!done.includes(item.l)){done.push(item.l);score+=10;save()}
-  buttons.forEach(b=>b.disabled=true);
-  const idx=letters.indexOf(item),next=letters[idx+1];
-  if(next){$("nextBtn").hidden=false;$("nextBtn").onclick=()=>{location.href="?letter="+encodeURIComponent(next.l)}}
-  else {$("nextBtn").hidden=true;$("finish").hidden=false}
-  $("score").textContent=`⭐ ${score}`;renderGrid();updateProgress();
- }else{btn.classList.add("wrong");$("feedback").textContent="❌ ليست الإجابة الصحيحة، حاول مرة أخرى."}
-}
-function renderGrid(){
- const grid=$("lettersGrid");grid.innerHTML="";
- letters.forEach(x=>{const b=document.createElement("button");b.className="letter-btn"+(done.includes(x.l)?" done":"")+(x.l===current.l?" active":"");b.textContent=x.l;b.onclick=()=>location.href="?letter="+encodeURIComponent(x.l);grid.appendChild(b)})
-}
-function updateProgress(){
- const p=Math.round(done.length/letters.length*100);$("progressText").textContent=`${done.length} / ${letters.length}`;$("progressBar").style.width=p+"%";
- if(done.length===letters.length)$("finish").hidden=false
-}
-$("speakBtn").onclick=()=>speak(current.l);
-show(current);
+const STATIONS=[{"letter": "ا", "name": "الألف", "word": "أسد", "emoji": "🦁", "wrong": ["باب", "تفاحة", "ثعلب"]}, {"letter": "ب", "name": "الباء", "word": "باب", "emoji": "🚪", "wrong": ["أسد", "تفاحة", "ثعلب"]}, {"letter": "ت", "name": "التاء", "word": "تفاحة", "emoji": "🍎", "wrong": ["أسد", "باب", "ثعلب"]}, {"letter": "ث", "name": "الثاء", "word": "ثعلب", "emoji": "🦊", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "ج", "name": "الجيم", "word": "جمل", "emoji": "🐪", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "ح", "name": "الحاء", "word": "حصان", "emoji": "🐴", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "خ", "name": "الخاء", "word": "خبز", "emoji": "🍞", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "د", "name": "الدال", "word": "دب", "emoji": "🐻", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "ذ", "name": "الذال", "word": "ذرة", "emoji": "🌽", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "ر", "name": "الراء", "word": "رمان", "emoji": "🍎", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "ز", "name": "الزاي", "word": "زهرة", "emoji": "🌸", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "س", "name": "السين", "word": "سمكة", "emoji": "🐟", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "ش", "name": "الشين", "word": "شجرة", "emoji": "🌳", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "ص", "name": "الصاد", "word": "صقر", "emoji": "🦅", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "ض", "name": "الضاد", "word": "ضفدع", "emoji": "🐸", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "ط", "name": "الطاء", "word": "طائرة", "emoji": "✈️", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "ظ", "name": "الظاء", "word": "ظرف", "emoji": "✉️", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "ع", "name": "العين", "word": "عصفور", "emoji": "🐦", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "غ", "name": "الغين", "word": "غزال", "emoji": "🦌", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "ف", "name": "الفاء", "word": "فراشة", "emoji": "🦋", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "ق", "name": "القاف", "word": "قمر", "emoji": "🌙", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "ك", "name": "الكاف", "word": "كتاب", "emoji": "📖", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "ل", "name": "اللام", "word": "ليمون", "emoji": "🍋", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "م", "name": "الميم", "word": "موز", "emoji": "🍌", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "ن", "name": "النون", "word": "نمر", "emoji": "🐯", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "هـ", "name": "الهاء", "word": "هلال", "emoji": "🌙", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "و", "name": "الواو", "word": "وردة", "emoji": "🌹", "wrong": ["أسد", "باب", "تفاحة"]}, {"letter": "ي", "name": "الياء", "word": "يد", "emoji": "✋", "wrong": ["أسد", "باب", "تفاحة"]}];
+const params=new URLSearchParams(location.search);let currentIndex=STATIONS.findIndex(s=>s.letter===params.get("letter"));if(currentIndex<0)currentIndex=0;
+const DK="rahlet_done_final",SK="rahlet_score_final";let done=JSON.parse(localStorage.getItem(DK)||"[]"),score=Number(localStorage.getItem(SK)||0);
+const $=id=>document.getElementById(id);function save(){localStorage.setItem(DK,JSON.stringify(done));localStorage.setItem(SK,score)}
+function speak(t){if(!("speechSynthesis"in window))return;speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(t);u.lang="ar-SA";u.rate=.75;speechSynthesis.speak(u)}
+function progress(){$("progressText").textContent=`${done.length} / 28`;$("progressBar").style.width=(done.length/28*100)+"%";$("score").textContent=score;$("finish").hidden=done.length!==28}
+function map(){let g=$("lettersGrid");g.innerHTML="";STATIONS.forEach((s,i)=>{let b=document.createElement("button");b.className="letter-btn "+(i===currentIndex?"active ":"")+(done.includes(s.letter)?"done":"");b.textContent=s.letter;b.onclick=()=>location.href="?letter="+encodeURIComponent(s.letter);g.appendChild(b)})}
+function render(){let s=STATIONS[currentIndex];$("stationLabel").textContent="محطة حرف "+s.letter;$("letterName").textContent=s.name;$("letter").textContent=s.letter;$("word").textContent=s.word;$("wordEmoji").textContent=s.emoji;$("question").textContent=`أي كلمة تبدأ بحرف ${s.letter}؟`;$("feedback").textContent="";$("nextBtn").hidden=true;
+let box=$("answers");box.innerHTML="";[s.word,...s.wrong].sort(()=>Math.random()-.5).forEach(w=>{let b=document.createElement("button");b.className="answer";b.textContent=w;b.onclick=()=>check(b,w,s);box.appendChild(b)});$("speakBtn").onclick=()=>speak(s.letter);map();progress()}
+function check(btn,w,s){if(w!==s.word){btn.classList.add("wrong");$("feedback").textContent="💡 حاول مرة أخرى.";setTimeout(()=>btn.classList.remove("wrong"),600);return}btn.classList.add("correct");$("feedback").textContent="🎉 ممتاز! إجابة صحيحة.";if(!done.includes(s.letter)){done.push(s.letter);score+=10;save()}[...$("answers").children].forEach(b=>b.disabled=true);let next=STATIONS[currentIndex+1];if(next){$("nextBtn").hidden=false;$("nextBtn").onclick=()=>location.href="?letter="+encodeURIComponent(next.letter)}else if(done.length===28)$("feedback").textContent="🏆 رائع! أكملت جميع الحروف.";map();progress()}
+$("speakBtn").onclick=()=>speak(STATIONS[currentIndex].letter);$("resetBtn").onclick=()=>{if(confirm("هل تريد بدء الرحلة من جديد؟")){done=[];score=0;save();render();scrollTo({top:0,behavior:"smooth"})}};$("printBtn").onclick=()=>print();render();
