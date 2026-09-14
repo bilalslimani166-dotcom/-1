@@ -1,7 +1,18 @@
 <!doctype html><html lang="ar" dir="rtl"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#6d4aff"><title>رحلة الحروف 🔤</title><link rel="stylesheet" href="style.css"></head>
-<body><main class="app">
+<body><div id="welcome" class="welcome-overlay">
+  <div class="welcome-box">
+    <div class="welcome-icon">🔤</div>
+    <h2>أهلًا بك في رحلة الحروف!</h2>
+    <p>رحلة تعليمية ممتعة لاكتشاف الحروف العربية، سماع أصواتها، وحل التحديات.</p>
+    <label>اسم الطفل (اختياري)</label>
+    <input id="childName" maxlength="30" placeholder="اكتب الاسم هنا">
+    <button id="startBtn" class="next-btn">🚀 ابدأ الرحلة</button>
+  </div>
+</div>
+<div id="confetti" class="confetti"></div>
+<main class="app">
 <header class="hero"><div class="brand">🔤 رحلة الحروف</div><h1>مغامرة الحروف تبدأ هنا!</h1><p>اكتشف الحرف، اسمع صوته، وأنجز تحدي المحطة.</p></header>
 <section class="card"><div class="progress-head"><b>🏁 تقدم الرحلة</b><span id="progressText">0 / 28</span></div><div class="progress"><i id="progressBar"></i></div><div class="score-row"><span>⭐ النقاط: <b id="score">0</b></span><button id="resetBtn">إعادة الرحلة</button></div></section>
 <section class="card"><div class="station-head"><div><span class="eyebrow" id="stationLabel"></span><h2 id="letterName"></h2><p>تعرّف على الحرف ثم استمع إلى نطقه.</p></div><div class="letter-orb" id="letter"></div></div>
@@ -9,6 +20,11 @@
 <button id="speakBtn" class="sound-btn">🔊 اسمع الحرف</button></section>
 <section class="card"><div class="section-title"><h2>🎯 تحدي المحطة</h2><span>10 نقاط</span></div><p id="question" class="question"></p><div id="answers" class="answers"></div><div id="feedback" class="feedback"></div><button id="nextBtn" class="next-btn" hidden>المحطة التالية ➜</button></section>
 <section class="card"><div class="section-title"><h2>🗺️ خريطة الرحلة</h2><span class="good">🟢 مكتمل</span></div><div id="lettersGrid" class="letters-grid"></div></section>
-<section class="card finish-card" id="finish" hidden><div class="trophy">🏆</div><h2>أحسنت! أكملت رحلة الحروف</h2><p>أنجزت جميع المحطات الـ28.</p><button id="printBtn" class="next-btn">🖨️ طباعة شهادة الإنجاز</button></section>
+<section class="card finish-card" id="finish" hidden">
+<div class="trophy">🏆</div><h2>أحسنت! أكملت رحلة الحروف</h2>
+<p id="certificateText">أنجزت جميع المحطات الـ28.</p>
+<div class="certificate-name" id="certificateName"></div>
+<button id="printBtn" class="next-btn">🖨️ طباعة شهادة الإنجاز</button>
+</section>
 <section class="card teacher"><h2>🛠️ إعداد المعلم</h2><p>28 رمز QR جاهز للطباعة، رمز لكل محطة.</p><a href="qr.html" class="teacher-btn">فتح صفحة QR ↗</a></section><footer>رحلة الحروف • تعلّم باللعب ✨</footer>
 </main><script src="app.js"></script></body></html>
