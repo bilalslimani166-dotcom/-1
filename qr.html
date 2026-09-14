@@ -1,57 +1,10 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>مولّد QR - رحلة الحروف</title>
-<link rel="stylesheet" href="style.css">
-<style>
-.qr-page{max-width:900px;margin:auto;padding:24px 16px}
-.controls{display:grid;gap:12px}
-input,select{width:100%;padding:14px;border:2px solid #e7e3f3;border-radius:14px;font:inherit}
-.qr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:20px}
-.qr-card{background:#fff;border-radius:20px;padding:18px;text-align:center;box-shadow:0 8px 24px rgba(44,35,90,.08)}
-.qr-card img{width:180px;height:180px;max-width:100%}
-.qr-card h3{margin:8px 0}.qr-card button{border:0;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:800}
-</style>
-</head>
-<body>
-<div class="qr-page">
-<header class="hero"><div class="badge">🧩 إعداد رحلة الحروف</div><h1>مولّد أكواد QR</h1>
-<p>اكتب رابط موقعك بعد نشره على GitHub Pages، ثم أنشئ رمزاً لكل حرف.</p></header>
-<section class="card controls">
-<label>رابط الموقع الأساسي
-<input id="base" placeholder="https://اسمك.github.io/اسم-المستودع/" value=""></label>
-<label>عدد الرموز
-<select id="count"><option value="28">كل الحروف (28)</option><option value="10">أول 10 حروف</option></select></label>
-<button class="answer" onclick="generate()">إنشاء أكواد QR</button>
-<p id="status" class="feedback"></p>
-</section>
-<section id="grid" class="qr-grid"></section>
-</div>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>أكواد QR - رحلة الحروف</title><link rel="stylesheet" href="style.css">
+<style>.qrpage{max-width:1000px;margin:auto;padding:20px}.controls{display:grid;gap:10px}input{padding:14px;border:2px solid #eee;border-radius:14px;font:inherit}.qrgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}.qrcard{text-align:center;border:1px solid #ddd;padding:12px;border-radius:16px}.qrcard img{width:160px;max-width:100%}@media(max-width:700px){.qrgrid{grid-template-columns:repeat(2,1fr)}}</style>
+</head><body><div class="qrpage"><div class="hero"><div class="badge">🧩 إعداد المعلم</div><h1>أكواد QR لرحلة الحروف</h1><p>أدخل رابط موقعك ثم أنشئ 28 رمزًا.</p></div>
+<section class="card controls"><label>رابط الموقع الأساسي<input id="base" value="https://bilalslimani166-dotcom.github.io/rahlet-alhorouf/"></label><button class="primary" onclick="makeQR()">إنشاء الرموز</button><p id="msg"></p></section><section id="grid" class="qrgrid"></section></div>
 <script>
-const letters=["ا","ب","ت","ث","ج","ح","خ","د","ذ","ر","ز","س","ش","ص","ض","ط","ظ","ع","غ","ف","ق","ك","ل","م","ن","هـ","و","ي"];
-function cleanBase(){
- let b=document.getElementById("base").value.trim();
- if(!b) return "";
- if(!b.endsWith("/")) b+="/";
- return b;
-}
-function generate(){
- const base=cleanBase(), grid=document.getElementById("grid"), status=document.getElementById("status");
- if(!base){status.textContent="أدخل رابط الموقع أولاً.";return}
- grid.innerHTML="";
- const n=Number(document.getElementById("count").value);
- letters.slice(0,n).forEach((l,i)=>{
-   const url=base+"?letter="+encodeURIComponent(l);
-   const card=document.createElement("div"); card.className="qr-card";
-   const img=document.createElement("img"); img.alt="QR لحرف "+l;
-   img.src="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data="+encodeURIComponent(url);
-   const h=document.createElement("h3"); h.textContent="حرف "+l;
-   const small=document.createElement("div"); small.textContent=url; small.style.fontSize="12px";small.style.wordBreak="break-all";small.style.color="#6b6b83";
-   const btn=document.createElement("button"); btn.textContent="فتح الرابط"; btn.onclick=()=>window.open(url,"_blank");
-   card.append(img,h,small,btn); grid.appendChild(card);
- });
- status.textContent="تم إنشاء الرموز. يمكنك حفظ صورة كل QR من المتصفح.";
-}
-</script>
-</body></html>
+const L=["ا","ب","ت","ث","ج","ح","خ","د","ذ","ر","ز","س","ش","ص","ض","ط","ظ","ع","غ","ف","ق","ك","ل","م","ن","هـ","و","ي"];
+function makeQR(){let base=document.getElementById("base").value.trim();if(!base.endsWith("/"))base+="/";let g=document.getElementById("grid");g.innerHTML="";
+L.forEach((l,i)=>{let url=base+"?letter="+encodeURIComponent(l),c=document.createElement("div");c.className="qrcard";c.innerHTML=`<h2>حرف ${l}</h2><img src="https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(url)}"><p>${url}</p>`;g.appendChild(c)});document.getElementById("msg").textContent="تم إنشاء 28 رمزًا.";}</script></body></html>
